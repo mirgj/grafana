@@ -76,16 +76,16 @@ type GetAllAlertNotificationsQuery struct {
 	Result []*AlertNotification
 }
 
-type AlertNotificationJournal struct {
+type AlertNotificationState struct {
 	Id         int64
 	OrgId      int64
 	AlertId    int64
 	NotifierId int64
 	SentAt     int64
-	Success    bool
+	State      string
 }
 
-type RecordNotificationJournalCommand struct {
+type UpdateAlertNotificationStateCommand struct {
 	OrgId      int64
 	AlertId    int64
 	NotifierId int64
@@ -93,12 +93,12 @@ type RecordNotificationJournalCommand struct {
 	Success    bool
 }
 
-type GetLatestNotificationQuery struct {
+type GetNotificationStateQuery struct {
 	OrgId      int64
 	AlertId    int64
 	NotifierId int64
 
-	Result []AlertNotificationJournal
+	Result *AlertNotificationState
 }
 
 type CleanNotificationJournalCommand struct {

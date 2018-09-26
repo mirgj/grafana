@@ -20,17 +20,17 @@ func TestAlertNotificationSQLAccess(t *testing.T) {
 			var notifierId int64 = 10
 
 			Convey("Getting last journal should raise error if no one exists", func() {
-				query := &m.GetLatestNotificationQuery{AlertId: alertId, OrgId: orgId, NotifierId: notifierId}
-				GetLatestNotification(context.Background(), query)
-				So(len(query.Result), ShouldEqual, 0)
+				query := &m.GetNotificationStateQuery{AlertId: alertId, OrgId: orgId, NotifierId: notifierId}
+				err := GetLatestNotification(context.Background(), query)
+				So(err, ShouldNotBeNil)
 
 				// recording an journal entry in another org to make sure org filter works as expected.
-				journalInOtherOrg := &m.RecordNotificationJournalCommand{AlertId: alertId, NotifierId: notifierId, OrgId: 10, Success: true, SentAt: 1}
-				err := RecordNotificationJournal(context.Background(), journalInOtherOrg)
+				journalInOtherOrg := &m.UpdateAlertNotificationStateCommand{AlertId: alertId, NotifierId: notifierId, OrgId: 10, SentAt: 1}
+				err = RecordNotificationJournal(context.Background(), journalInOtherOrg)
 				So(err, ShouldBeNil)
 
 				Convey("should be able to record two journaling events", func() {
-					createCmd := &m.RecordNotificationJournalCommand{AlertId: alertId, NotifierId: notifierId, OrgId: orgId, Success: true, SentAt: 1}
+					createCmd := &m.UpdateAlertNotificationStateCommand{AlertId: alertId, NotifierId: notifierId, OrgId: orgId, SentAt: 1}
 
 					err := RecordNotificationJournal(context.Background(), createCmd)
 					So(err, ShouldBeNil)
